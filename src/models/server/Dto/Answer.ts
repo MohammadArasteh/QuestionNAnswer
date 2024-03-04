@@ -13,8 +13,8 @@ export type CreateAnswerResponse = {
 
 export type GetAnswersRequest = {
   questionId: string;
-  pageSize: number;
-  pageNumber: number;
+  pageSize?: number;
+  pageNumber?: number;
 };
 export type GetAnswersResponse = {
   data: Array<Entity.Answer>;

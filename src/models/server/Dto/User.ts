@@ -14,3 +14,7 @@ export type GetUserRequest = {
 export type GetUserResponse = {
   data: Entity.User;
 };
+
+export type GetUsersResponse = {
+  data: Array<Entity.User>;
+};
