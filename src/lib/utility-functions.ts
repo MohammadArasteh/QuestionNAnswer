@@ -3,6 +3,9 @@ import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 
+export function range(min: number, max: number): number {
+  return Math.ceil(Math.random() * (max - min) + min);
+}
 export function selectRandom<T>(list: Array<T>): T {
   return list[Math.floor(Math.random() * list.length)];
 }

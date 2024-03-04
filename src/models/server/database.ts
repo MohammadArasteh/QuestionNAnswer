@@ -5,7 +5,7 @@ import {
   createFakeQuestion,
   createFakeUser,
 } from "@/lib/faker";
-import { selectRandom, sleep } from "@/lib/utility-functions";
+import { range, selectRandom, sleep } from "@/lib/utility-functions";
 import { AnswerReactionType } from "./entity";
 
 const currentUser: Dto.User.CreateUserRequest = {
@@ -15,12 +15,14 @@ const currentUser: Dto.User.CreateUserRequest = {
 } as const;
 
 export class Database {
+  private static INITIATED = false;
   private static DELAY_TIME = 50;
   static async INIT() {
     axios.defaults.baseURL = `http://localhost:3000`;
     const resetDatabase = await this.RESET_CHECK();
     if (resetDatabase) await this.RESET_DATABASE();
     this.DELAY_TIME = 2000;
+    this.INITIATED = true;
   }
 
   private static async RESET_DATABASE() {
@@ -145,8 +147,8 @@ export class Database {
       userId: payload.userId,
       questionId: payload.questionId,
       body: payload.body,
-      likedIds: [],
-      dislikedIds: [],
+      likedIds: this.INITIATED ? [] : Array(range(5, 20)).fill(100),
+      dislikedIds: this.INITIATED ? [] : Array(range(5, 20)).fill(100),
       dateTime: new Date().toISOString(),
     });
     const questionResult = await axios.get<Entity.Question>(
