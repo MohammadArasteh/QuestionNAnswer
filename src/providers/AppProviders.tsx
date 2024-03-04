@@ -1,15 +1,15 @@
 import { RouterProvider } from "react-router-dom";
 import { DirectionProvider } from "./RtlProvider";
 import { router } from "../lib";
+import { Provider as RTKProvider } from "react-redux";
+import { store } from "@/store/store";
 
-type Props = {
-  children: React.ReactElement;
-};
-
-export function AppProviders({ children }: Props) {
+export function AppProviders() {
   return (
-    <DirectionProvider dir="rtl">
-      <RouterProvider router={router} fallbackElement={children} />
-    </DirectionProvider>
+    <RTKProvider store={store}>
+      <DirectionProvider dir="rtl">
+        <RouterProvider router={router} fallbackElement={<div />} />
+      </DirectionProvider>
+    </RTKProvider>
   );
 }
