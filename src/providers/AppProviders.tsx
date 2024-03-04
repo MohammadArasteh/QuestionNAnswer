@@ -4,14 +4,18 @@ import { DirectionProvider } from "./RtlProvider";
 import { router } from "../lib";
 import { Provider as RTKProvider } from "react-redux";
 import { store } from "@/store/store";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "@/theme/theme";
 
 export function AppProviders() {
   return (
-    <RTKProvider store={store}>
-      <CssBaseline />
-      <DirectionProvider dir="rtl">
-        <RouterProvider router={router} />
-      </DirectionProvider>
-    </RTKProvider>
+    <ThemeProvider theme={theme}>
+      <RTKProvider store={store}>
+        <CssBaseline />
+        <DirectionProvider dir="rtl">
+          <RouterProvider router={router} />
+        </DirectionProvider>
+      </RTKProvider>
+    </ThemeProvider>
   );
 }
