@@ -55,7 +55,7 @@ export default function AnswerForm(props: Props) {
   const body = watch("body");
 
   return (
-    <VerticalBox>
+    <VerticalBox mb={1}>
       <form
         onSubmit={onSubmit}
         style={{

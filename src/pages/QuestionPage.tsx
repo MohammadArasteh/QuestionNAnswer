@@ -22,8 +22,10 @@ import {
 export default function QuestionPage() {
   const user = useAppSelector((store) => store.user_info.data);
   const navigate = useNavigate();
-  const { data: question } =
-    useLoaderData() as Server.Dto.Question.GetQuestionResponse;
+  const loaderData = useLoaderData() as Server.Dto.Question.GetQuestionResponse;
+  const [question, setQuestion] = React.useState<Server.Entity.Question | null>(
+    loaderData.data
+  );
 
   const [page, setPage] = React.useState<number>(1);
   const [totalCount, setTotalCount] = React.useState<number>(0);
@@ -66,85 +68,100 @@ export default function QuestionPage() {
     [answers]
   );
 
-  const afterAnswerCreated = React.useCallback(() => {
-    fetchAnswers();
-  }, []);
+  const refreshQuestion = async () => {
+    const result = await Database.FETCH_QUESTION({
+      questionId: question!.id,
+    });
+    setQuestion(result.data);
+  };
 
-  if (!question) return null;
+  const afterAnswerCreated = React.useCallback(async () => {
+    await fetchAnswers();
+    await refreshQuestion();
+  }, []);
 
   return (
     <VerticalBox height={"100%"}>
-      <HorizontalBox justifyContent={"space-between"}>
-        <Typography variant="h5" fontWeight={"bold"}>
-          سوال
-        </Typography>
-        <HorizontalBox gap={1}>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => navigate("/questions")}
-          >
-            بازگشت
-          </Button>
-          <Divider orientation="vertical" />
-          <Logo />
-        </HorizontalBox>
-      </HorizontalBox>
-      <VerticalBox overflow={"auto"} gap={2}>
-        <LabeledBox
-          title="سوال"
-          labelProps={{
-            style: { fontSize: "1rem", color: "black" },
-          }}
-        >
-          <Question question={question}>
-            <Question.Header
-              title={question.title}
-              dateTime={question.dateTime}
-              userId={question.userId}
-            />
-            <Divider />
-            <Question.Body body={question.body} />
-            <Question.Footer answersCount={question.answersCount} />
-          </Question>
-        </LabeledBox>
-        <LabeledBox
-          title="پاسخ‌ها"
-          labelProps={{
-            style: { fontSize: "1rem", color: "black" },
-          }}
-        >
-          <VerticalBox>
-            {answers.map((answer, index) => (
-              <Answer key={index} answer={answer}>
-                <Answer.Header
-                  dateTime={answer.dateTime}
-                  userId={answer.userId}
+      {question ? (
+        <>
+          <HorizontalBox justifyContent={"space-between"}>
+            <Typography variant="h5" fontWeight={"bold"}>
+              سوال
+            </Typography>
+            <HorizontalBox gap={1}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => navigate("/questions")}
+              >
+                بازگشت
+              </Button>
+              <Divider orientation="vertical" />
+              <Logo />
+            </HorizontalBox>
+          </HorizontalBox>
+          <VerticalBox overflow={"auto"} gap={2}>
+            <LabeledBox
+              title="سوال"
+              labelProps={{
+                style: { fontSize: "1rem", color: "black" },
+              }}
+            >
+              <Question question={question}>
+                <Question.Header
+                  title={question.title}
+                  dateTime={question.dateTime}
+                  userId={question.userId}
                 />
                 <Divider />
-                <Answer.Body body={answer.body} />
-                <Answer.Footer
-                  answerId={answer.id}
-                  dislikesCount={answer.dislikesCount}
-                  likesCount={answer.likesCount}
-                  userReaction={answer.userReaction}
-                  onReact={onAnswerReact}
-                />
-              </Answer>
-            ))}
+                <Question.Body body={question.body} />
+                <Question.Footer answersCount={question.answersCount} />
+              </Question>
+            </LabeledBox>
+            <LabeledBox
+              title="پاسخ‌ها"
+              labelProps={{
+                style: { fontSize: "1rem", color: "black" },
+              }}
+            >
+              <VerticalBox>
+                {answers.map((answer, index) => (
+                  <Answer key={index} answer={answer}>
+                    <Answer.Header
+                      dateTime={answer.dateTime}
+                      userId={answer.userId}
+                    />
+                    <Divider />
+                    <Answer.Body body={answer.body} />
+                    <Answer.Footer
+                      answerId={answer.id}
+                      dislikesCount={answer.dislikesCount}
+                      likesCount={answer.likesCount}
+                      userReaction={answer.userReaction}
+                      onReact={onAnswerReact}
+                    />
+                  </Answer>
+                ))}
+              </VerticalBox>
+            </LabeledBox>
+            <HorizontalBox justifyContent={"end"}>
+              <Pagination
+                color="primary"
+                shape="rounded"
+                count={Math.ceil(totalCount / 3)}
+                page={page}
+                onChange={handlePageChange}
+              />
+            </HorizontalBox>
+            <AnswerForm
+              questionId={question.id}
+              afterSubmit={afterAnswerCreated}
+            />
           </VerticalBox>
-        </LabeledBox>
-        <HorizontalBox justifyContent={"end"}>
-          <Pagination
-            color="primary"
-            shape="rounded"
-            count={Math.ceil(totalCount / 3)}
-            page={page}
-            onChange={handlePageChange}
-          />
-        </HorizontalBox>
-        <AnswerForm questionId={question.id} afterSubmit={afterAnswerCreated} />
-      </VerticalBox>
+        </>
+      ) : (
+        <div>Not Found</div>
+      )}
     </VerticalBox>
   );
 }

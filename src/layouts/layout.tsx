@@ -25,6 +25,6 @@ export default function Layout() {
 
 Layout.loader = async () => {
   await Database.INIT();
-  const result = await Database.FETCH_USER({ id: 6 });
+  const result = await Database.FETCH_USER({ id: 11 });
   return result;
 };
