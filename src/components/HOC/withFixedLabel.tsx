@@ -61,4 +61,5 @@ const WrappedContainer = styled.div`
 const LabelContainer = styled.div`
   color: inherit;
   font-size: 14px;
+  font-weight: bold;
 `;
