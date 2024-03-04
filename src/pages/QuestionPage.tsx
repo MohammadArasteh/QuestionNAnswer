@@ -1,5 +1,6 @@
 import {
   Answer,
+  AnswerForm,
   HorizontalBox,
   Logo,
   Question,
@@ -64,6 +65,10 @@ export default function QuestionPage() {
     },
     [answers]
   );
+
+  const afterAnswerCreated = React.useCallback(() => {
+    fetchAnswers();
+  }, []);
 
   if (!question) return null;
 
@@ -138,6 +143,7 @@ export default function QuestionPage() {
             onChange={handlePageChange}
           />
         </HorizontalBox>
+        <AnswerForm questionId={question.id} afterSubmit={afterAnswerCreated} />
       </VerticalBox>
     </VerticalBox>
   );

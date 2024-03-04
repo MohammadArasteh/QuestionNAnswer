@@ -116,7 +116,12 @@ Answer.Footer = function Footer(props: AnswerFooterProps) {
           variant="outlined"
           color="success"
           onClick={() =>
-            props.onReact(props.answerId, AnswerReactionType.LIKED)
+            props.onReact(
+              props.answerId,
+              props.userReaction === AnswerReactionType.LIKED
+                ? AnswerReactionType.NONE
+                : AnswerReactionType.LIKED
+            )
           }
         >
           پاسخ خوب
@@ -126,7 +131,12 @@ Answer.Footer = function Footer(props: AnswerFooterProps) {
           variant="outlined"
           color="error"
           onClick={() =>
-            props.onReact(props.answerId, AnswerReactionType.DISLIKED)
+            props.onReact(
+              props.answerId,
+              props.userReaction === AnswerReactionType.DISLIKED
+                ? AnswerReactionType.NONE
+                : AnswerReactionType.DISLIKED
+            )
           }
         >
           پاسخ بد

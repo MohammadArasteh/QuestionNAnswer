@@ -4,3 +4,4 @@ export { default as Logo } from "./Logo";
 export { default as Question } from "./Question";
 export { default as Answer } from "./Answer";
 export { default as LoadingButton } from "./LoadingButton";
+export { default as AnswerForm } from "./AnswerForm";

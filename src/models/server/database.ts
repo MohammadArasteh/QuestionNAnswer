@@ -32,7 +32,7 @@ export class Database {
     const { data: questions } = await this.FETCH_QUESTIONS({});
     const { data: users } = await this.FETCH_USERS();
     const { data: answers } = await this.FETCH_ALL_ANSWERS();
-    return users.length < 5 || questions.length < 10 || answers.length < 20;
+    return users.length < 10 || questions.length < 20 || answers.length < 60;
   }
 
   static async FETCH_QUESTIONS(
@@ -214,7 +214,7 @@ export class Database {
   private static async FILL_DATABASE(currentUser?: Dto.User.CreateUserRequest) {
     // create users
     const users: Entity.User[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       await sleep(this.DELAY_TIME);
       const result = await this.CREATE_USER(createFakeUser());
       users.push(result.data);
@@ -222,13 +222,13 @@ export class Database {
     if (currentUser) await this.CREATE_USER(currentUser);
     // create questions with created users
     const questions: Array<Entity.Question> = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       const user = selectRandom(users);
       const result = await this.CREATE_QUESTION(createFakeQuestion(user.id));
       questions.push(result.data);
     }
     // create answers for created questions
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 60; i++) {
       const user = selectRandom(users);
       const question = selectRandom(questions);
       await this.CREATE_ANSWER(createFakeAnswers(user.id, question.id));
