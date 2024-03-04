@@ -14,10 +14,12 @@ const currentUser: Dto.User.CreateUserRequest = {
 } as const;
 
 export class Database {
+  private static DELAY_TIME = 50;
   static async INIT() {
     axios.defaults.baseURL = `http://localhost:3000`;
     const resetDatabase = await this.RESET_CHECK();
     if (resetDatabase) await this.RESET_DATABASE();
+    this.DELAY_TIME = 2000;
   }
 
   private static async RESET_DATABASE() {
@@ -69,6 +71,7 @@ export class Database {
       answersCount: 0,
       dateTime: new Date().toISOString(),
     });
+    await sleep(this.DELAY_TIME);
     return {
       data: result.data,
       message: result.statusText,
@@ -110,6 +113,7 @@ export class Database {
       dislikesCount: 0,
       dateTime: new Date().toISOString(),
     });
+    await sleep(this.DELAY_TIME);
     return {
       data: result.data,
       message: result.statusText,
@@ -173,7 +177,7 @@ export class Database {
     // create users
     const users: Entity.User[] = [];
     for (let i = 0; i < 5; i++) {
-      await sleep(50);
+      await sleep(this.DELAY_TIME);
       const result = await this.CREATE_USER(createFakeUser());
       users.push(result.data);
     }
@@ -181,14 +185,12 @@ export class Database {
     // create questions with created users
     const questions: Array<Entity.Question> = [];
     for (let i = 0; i < 10; i++) {
-      await sleep(50);
       const user = selectRandom(users);
       const result = await this.CREATE_QUESTION(createFakeQuestion(user.id));
       questions.push(result.data);
     }
     // create answers for created questions
     for (let i = 0; i < 20; i++) {
-      await sleep(50);
       const user = selectRandom(users);
       const question = selectRandom(questions);
       await this.CREATE_ANSWER(createFakeAnswers(user.id, question.id));
