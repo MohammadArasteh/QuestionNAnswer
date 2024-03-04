@@ -1,4 +1,4 @@
-import { Question } from "../Entity";
+import { Question } from "../entity";
 
 export type CreateQuestionRequest = {
   userId: string;

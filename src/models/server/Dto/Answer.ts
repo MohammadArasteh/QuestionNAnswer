@@ -1,4 +1,4 @@
-import { Answer } from "../Entity";
+import { Answer } from "../entity";
 
 export type CreateAnswerRequest = {
   userId: string;
