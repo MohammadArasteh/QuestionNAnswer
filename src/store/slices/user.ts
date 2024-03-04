@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: Server.Dto.User.GetUserResponse = {
   data: {
-    id: "",
+    id: 0,
     imageUrl: "",
     userName: "",
   },

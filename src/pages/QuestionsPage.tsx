@@ -6,12 +6,15 @@ import { Server } from "@/models";
 import { Database } from "@/models/server";
 import { Question } from "@/components";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/lib";
+import { questionsSlice } from "@/store/slices";
 
 export default function QuestionsPage() {
+  const page = useAppSelector((store) => store.questions.currentPage);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [page, setPage] = React.useState<number>(1);
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const [questions, setQuestions] = React.useState<Server.Entity.Question[]>(
     []
@@ -35,7 +38,7 @@ export default function QuestionsPage() {
   };
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
+    dispatch(questionsSlice.actions.setCurrentPage(value));
   };
 
   return (
