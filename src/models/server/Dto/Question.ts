@@ -1,7 +1,7 @@
 import { Entity } from "..";
 
 export type CreateQuestionRequest = {
-  userId: string;
+  userId: number;
   title: string;
   body: string;
 };
@@ -16,7 +16,7 @@ export type GetQuestionsResponse = {
 };
 
 export type GetQuestionRequest = {
-  questionId: string;
+  questionId: number;
 };
 export type GetQuestionResponse = {
   data: Entity.Question | null;

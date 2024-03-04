@@ -1,8 +1,8 @@
 import { Entity } from "..";
 
 export type CreateAnswerRequest = {
-  questionId: string;
-  userId: string;
+  questionId: number;
+  userId: number;
   body: string;
 };
 
@@ -12,7 +12,7 @@ export type CreateAnswerResponse = {
 };
 
 export type GetAnswersRequest = {
-  questionId: string;
+  questionId: number;
   pageSize?: number;
   pageNumber?: number;
 };

@@ -1,6 +1,7 @@
 import { Entity } from "..";
 
 export type CreateUserRequest = {
+  id?: number;
   userName: string;
   imageUrl: string;
 };
@@ -9,7 +10,7 @@ export type CreateUserResponse = {
 };
 
 export type GetUserRequest = {
-  id: string;
+  id: number;
 };
 export type GetUserResponse = {
   data: Entity.User;

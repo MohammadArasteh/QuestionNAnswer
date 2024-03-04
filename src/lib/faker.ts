@@ -8,7 +8,7 @@ export function createFakeUser(): Server.Dto.User.CreateUserRequest {
   };
 }
 export function createFakeQuestion(
-  userId: string
+  userId: number
 ): Server.Dto.Question.CreateQuestionRequest {
   return {
     userId: userId,
@@ -17,8 +17,8 @@ export function createFakeQuestion(
   };
 }
 export function createFakeAnswers(
-  userId: string,
-  questionId: string
+  userId: number,
+  questionId: number
 ): Server.Dto.Answer.CreateAnswerRequest {
   return {
     userId: userId,
