@@ -1,6 +1,7 @@
 import { Answer } from "../entity";
 
 export type CreateAnswerRequest = {
+  questionId: string;
   userId: string;
   body: string;
 };

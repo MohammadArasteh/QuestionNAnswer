@@ -1,8 +1,9 @@
 import { DateTime } from "./DateTime";
 
 export type Answer = {
-  userTitle: string;
-  userUrl: string;
+  id: string;
+  userId: string;
+  questionId: string;
   body: string;
   likesCount: number;
   dislikesCount: number;
