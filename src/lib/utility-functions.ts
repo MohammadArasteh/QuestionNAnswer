@@ -29,3 +29,13 @@ export function getDate(dateTime: Server.Entity.DateTime): string {
     .setFormat("YYYY/MM/DD")
     .toString();
 }
+
+export function getValue(object: any, path: string) {
+  const keys = path.split(".");
+  let value = object;
+  for (const key of keys) {
+    if (value[key]) value = value[key];
+    else return undefined;
+  }
+  return value;
+}
