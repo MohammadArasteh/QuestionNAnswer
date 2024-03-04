@@ -72,7 +72,7 @@ Question.Body = function Body(props: QuestionBodyProps) {
 
 type QuestionFooterProps = {
   answersCount: number;
-  onViewDetails: VoidFunction;
+  onViewDetails?: VoidFunction;
 };
 Question.Footer = function Footer(props: QuestionFooterProps) {
   return (
@@ -85,9 +85,15 @@ Question.Footer = function Footer(props: QuestionFooterProps) {
         <QuestionAnswerIcon />
         <Typography>تعداد پاسخ ها: {props.answersCount}</Typography>
       </HorizontalBox>
-      <Button onClick={props.onViewDetails} variant="outlined" color="primary">
-        مشاهده جزئیات
-      </Button>
+      {props.onViewDetails && (
+        <Button
+          onClick={props.onViewDetails}
+          variant="outlined"
+          color="primary"
+        >
+          مشاهده جزئیات
+        </Button>
+      )}
     </HorizontalBox>
   );
 };

@@ -6,6 +6,7 @@ import {
   createFakeUser,
 } from "@/lib/faker";
 import { selectRandom, sleep } from "@/lib/utility-functions";
+import { AnswerReactionType } from "./entity";
 
 const currentUser: Dto.User.CreateUserRequest = {
   userName: "محمد",
@@ -28,8 +29,8 @@ export class Database {
   }
 
   private static async RESET_CHECK(): Promise<boolean> {
-    const { data: users } = await this.FETCH_USERS();
     const { data: questions } = await this.FETCH_QUESTIONS({});
+    const { data: users } = await this.FETCH_USERS();
     const { data: answers } = await this.FETCH_ALL_ANSWERS();
     return users.length < 5 || questions.length < 10 || answers.length < 20;
   }
@@ -78,10 +79,40 @@ export class Database {
     };
   }
 
+  static async UPDATE_QUESTION(payload: Entity.Question) {
+    await axios.put(`/questions/${payload.id}`, payload);
+  }
+
+  static async REACT_ANSWER(
+    payload: Dto.Answer.AnswerReactionRequest
+  ): Promise<Dto.Answer.AnswerReactionResponse> {
+    const result = await axios.get<Entity.Answer>(
+      `/answers/${payload.answerId}`
+    );
+    const answer = result.data;
+    answer.likedIds = answer.likedIds.filter((id) => id !== payload.userId);
+    answer.dislikedIds = answer.dislikedIds.filter(
+      (id) => id !== payload.userId
+    );
+    if (payload.reaction === AnswerReactionType.LIKED)
+      answer.likedIds.push(payload.userId);
+    else if (payload.reaction === AnswerReactionType.DISLIKED)
+      answer.dislikedIds.push(payload.userId);
+    await axios.put(`/answers/${payload.answerId}`, answer);
+    return {
+      data: this.MAP_SERVERSIDE_ANSWER_TO_CLIENTSIDE_ANSWER(
+        answer,
+        payload.userId
+      ),
+    };
+  }
+
   static async FETCH_ANSWERS(
     payload: Dto.Answer.GetAnswersRequest
   ): Promise<Dto.Answer.GetAnswersResponse> {
-    const result = await axios.get<Array<Entity.Answer>>(`/answers`);
+    const result = await axios.get<Array<Entity.Answer>>(
+      `/answers?questionId=${payload.questionId}`
+    );
     const totalRows = result.data.length;
     if (payload.pageSize !== undefined && payload.pageNumber != undefined) {
       const startIndex = payload.pageNumber * payload.pageSize;
@@ -89,7 +120,12 @@ export class Database {
       result.data = result.data.slice(startIndex, endIndex);
     }
     return {
-      data: result.data,
+      data: result.data.map((answer) =>
+        this.MAP_SERVERSIDE_ANSWER_TO_CLIENTSIDE_ANSWER(
+          answer,
+          payload.currentUserId
+        )
+      ),
       totalCount: totalRows,
     };
   }
@@ -97,7 +133,7 @@ export class Database {
   static async FETCH_ALL_ANSWERS(): Promise<Dto.Answer.GetAnswersResponse> {
     const result = await axios.get<Array<Entity.Answer>>("/answers");
     return {
-      data: result.data,
+      data: result.data.map(this.MAP_SERVERSIDE_ANSWER_TO_CLIENTSIDE_ANSWER),
       totalCount: result.data.length,
     };
   }
@@ -109,9 +145,17 @@ export class Database {
       userId: payload.userId,
       questionId: payload.questionId,
       body: payload.body,
-      likesCount: 0,
-      dislikesCount: 0,
+      likedIds: [],
+      dislikedIds: [],
       dateTime: new Date().toISOString(),
+    });
+    const questionResult = await axios.get<Entity.Question>(
+      `/questions/${payload.questionId}`
+    );
+    await this.UPDATE_QUESTION({
+      ...questionResult.data,
+      id: payload.questionId,
+      answersCount: questionResult.data.answersCount + 1,
     });
     await sleep(this.DELAY_TIME);
     return {
@@ -157,20 +201,14 @@ export class Database {
 
   private static async CLEAR_DATABASE() {
     const { data: users } = await this.FETCH_USERS();
-    for (const user of users) {
-      await this.DELETE("users", user.id);
-    }
+    for (const user of users) await this.DELETE("users", user.id);
 
     const { data: questions } = await this.FETCH_QUESTIONS({});
-    for (const question of questions) {
-      const { data: answers } = await this.FETCH_ANSWERS({
-        questionId: question.id,
-      });
-      for (const answer of answers) {
-        await this.DELETE("answers", answer.id);
-      }
+    for (const question of questions)
       await this.DELETE("questions", question.id);
-    }
+
+    const { data: answers } = await this.FETCH_ALL_ANSWERS();
+    for (const answer of answers) await this.DELETE("answers", answer.id);
   }
 
   private static async FILL_DATABASE(currentUser?: Dto.User.CreateUserRequest) {
@@ -195,5 +233,25 @@ export class Database {
       const question = selectRandom(questions);
       await this.CREATE_ANSWER(createFakeAnswers(user.id, question.id));
     }
+  }
+
+  private static MAP_SERVERSIDE_ANSWER_TO_CLIENTSIDE_ANSWER(
+    answer: Entity.Answer,
+    userId: number
+  ): Dto.Answer.Answer {
+    return {
+      id: answer.id,
+      userId: answer.userId,
+      questionId: answer.questionId,
+      body: answer.body,
+      userReaction: answer.likedIds.includes(userId)
+        ? AnswerReactionType.LIKED
+        : answer.dislikedIds.includes(userId)
+        ? AnswerReactionType.DISLIKED
+        : AnswerReactionType.NONE,
+      likesCount: answer.likedIds.length,
+      dislikesCount: answer.dislikedIds.length,
+      dateTime: answer.dateTime,
+    };
   }
 }

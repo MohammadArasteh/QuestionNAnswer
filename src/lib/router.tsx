@@ -1,10 +1,7 @@
-import React from "react";
 import { createHashRouter, Navigate } from "react-router-dom";
 
 import { Layout } from "@layouts/index";
-const NewQuestionPage = React.lazy(() => import("@pages/NewQuestionPage"));
-const QuestionPage = React.lazy(() => import("@pages/QuestionPage"));
-const QuestionsPage = React.lazy(() => import("@pages/QuestionsPage"));
+import { QuestionPage, QuestionsPage, NewQuestionPage } from "@pages/index";
 
 const router = createHashRouter([
   {
@@ -29,6 +26,7 @@ const router = createHashRouter([
       {
         path: "/question/:id",
         element: <QuestionPage />,
+        loader: QuestionPage.loader,
       },
     ],
   },

@@ -82,7 +82,7 @@ export default function QuestionsPage() {
           <Pagination
             color="primary"
             shape="rounded"
-            count={Math.floor(totalCount / 3 + (totalCount % 3))}
+            count={Math.ceil(totalCount / 3)}
             page={page}
             onChange={handlePageChange}
           />
