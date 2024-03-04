@@ -70,4 +70,25 @@ export class Database {
       message: result.statusText,
     };
   }
+
+  static async CREATE_USER(
+    payload: Dto.User.CreateUserRequest
+  ): Promise<Dto.User.CreateUserResponse> {
+    const result = await axios.post<Entity.User>("/users", {
+      userName: payload.userName,
+      imageUrl: payload.imageUrl,
+    });
+    return {
+      data: result.data,
+    };
+  }
+
+  static async GET_USER(
+    payload: Dto.User.GetUserRequest
+  ): Promise<Dto.User.GetUserResponse> {
+    const result = await axios.get<Entity.User>(`/users/${payload.id}`);
+    return {
+      data: result.data,
+    };
+  }
 }

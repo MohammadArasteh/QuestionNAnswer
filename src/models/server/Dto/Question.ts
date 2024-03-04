@@ -1,4 +1,4 @@
-import { Question } from "../entity";
+import { Entity } from "..";
 
 export type CreateQuestionRequest = {
   userId: string;
@@ -7,17 +7,17 @@ export type CreateQuestionRequest = {
 };
 
 export type CreateQuestionResponse = {
-  data: Question;
+  data: Entity.Question;
   message: string;
 };
 
 export type GetQuestionsResponse = {
-  data: Array<Question>;
+  data: Array<Entity.Question>;
 };
 
 export type GetQuestionRequest = {
   questionId: string;
 };
 export type GetQuestionResponse = {
-  data: Question | null;
+  data: Entity.Question | null;
 };
