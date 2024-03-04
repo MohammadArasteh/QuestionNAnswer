@@ -27,15 +27,24 @@ export class Database {
 
   private static async RESET_CHECK(): Promise<boolean> {
     const { data: users } = await this.FETCH_USERS();
-    const { data: questions } = await this.FETCH_QUESTIONS();
+    const { data: questions } = await this.FETCH_QUESTIONS({});
     const { data: answers } = await this.FETCH_ALL_ANSWERS();
     return users.length < 5 || questions.length < 10 || answers.length < 20;
   }
 
-  static async FETCH_QUESTIONS(): Promise<Dto.Question.GetQuestionsResponse> {
-    const result = await axios.get<Array<Entity.Question>>("/questions");
+  static async FETCH_QUESTIONS(
+    payload: Dto.Question.GetQuestionsRequest
+  ): Promise<Dto.Question.GetQuestionsResponse> {
+    const result = await axios.get<Array<Entity.Question>>(`/questions`);
+    const totalRows = result.data.length;
+    if (payload.pageSize !== undefined && payload.pageNumber !== undefined) {
+      const startIndex = payload.pageNumber * payload.pageSize;
+      const endIndex = startIndex + payload.pageSize;
+      result.data = result.data.slice(startIndex, endIndex);
+    }
     return {
       data: result.data,
+      totalCount: totalRows,
     };
   }
 
@@ -69,12 +78,16 @@ export class Database {
   static async FETCH_ANSWERS(
     payload: Dto.Answer.GetAnswersRequest
   ): Promise<Dto.Answer.GetAnswersResponse> {
-    let query = `/answers?questionId=${payload.questionId}`;
-    if (payload.pageSize) query += `&_limit=${payload.pageSize}`;
-    if (payload.pageNumber) query += `&_page=${payload.pageNumber}`;
-    const result = await axios.get<Array<Entity.Answer>>(query);
+    const result = await axios.get<Array<Entity.Answer>>(`/answers`);
+    const totalRows = result.data.length;
+    if (payload.pageSize !== undefined && payload.pageNumber != undefined) {
+      const startIndex = payload.pageNumber * payload.pageSize;
+      const endIndex = startIndex + payload.pageSize;
+      result.data = result.data.slice(startIndex, endIndex);
+    }
     return {
       data: result.data,
+      totalCount: totalRows,
     };
   }
 
@@ -82,6 +95,7 @@ export class Database {
     const result = await axios.get<Array<Entity.Answer>>("/answers");
     return {
       data: result.data,
+      totalCount: result.data.length,
     };
   }
 
@@ -143,7 +157,7 @@ export class Database {
       await this.DELETE("users", user.id);
     }
 
-    const { data: questions } = await this.FETCH_QUESTIONS();
+    const { data: questions } = await this.FETCH_QUESTIONS({});
     for (const question of questions) {
       const { data: answers } = await this.FETCH_ANSWERS({
         questionId: question.id,

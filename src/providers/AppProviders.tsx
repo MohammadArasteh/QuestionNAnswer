@@ -5,7 +5,7 @@ import { router } from "../lib";
 import { Provider as RTKProvider } from "react-redux";
 import { store } from "@/store/store";
 import { ThemeProvider } from "@mui/material";
-import { theme } from "@/theme/theme";
+import { theme } from "@/theme";
 
 export function AppProviders() {
   return (

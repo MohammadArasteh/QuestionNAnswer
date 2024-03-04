@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-export const theme = createTheme({
+const theme = createTheme({
   components: {
     MuiPagination: {
       defaultProps: {
@@ -9,3 +9,5 @@ export const theme = createTheme({
     },
   },
 });
+
+export default theme;

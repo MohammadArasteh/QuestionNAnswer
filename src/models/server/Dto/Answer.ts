@@ -18,4 +18,5 @@ export type GetAnswersRequest = {
 };
 export type GetAnswersResponse = {
   data: Array<Entity.Answer>;
+  totalCount: number;
 };

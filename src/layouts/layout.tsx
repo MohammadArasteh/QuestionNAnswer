@@ -2,7 +2,8 @@ import { useAppDispatch } from "@/lib";
 import { Server } from "@/models";
 import { Database } from "@/models/server";
 import { userInfoSlice } from "@/store/slices";
-import React from "react";
+import { Box } from "@mui/material";
+import React, { Suspense } from "react";
 import { Outlet, useLoaderData } from "react-router-dom";
 
 export default function Layout() {
@@ -13,7 +14,13 @@ export default function Layout() {
     dispatch(userInfoSlice.actions.setUserInfo(currentUser));
   }, [currentUser, dispatch]);
 
-  return <Outlet />;
+  return (
+    <Box p={2} height={"100%"}>
+      <Suspense fallback={<p>loading...</p>}>
+        <Outlet />
+      </Suspense>
+    </Box>
+  );
 }
 
 Layout.loader = async () => {

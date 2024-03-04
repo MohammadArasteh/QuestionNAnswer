@@ -11,8 +11,14 @@ export type CreateQuestionResponse = {
   message: string;
 };
 
+export type GetQuestionsRequest = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+
 export type GetQuestionsResponse = {
   data: Array<Entity.Question>;
+  totalCount: number;
 };
 
 export type GetQuestionRequest = {
